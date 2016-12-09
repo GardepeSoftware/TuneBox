@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="#1A7852"
+    tools:context=".View.ArtistAlbumsMenu"
+    android:weightSum="1">
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="79dp"
+        android:layout_height="wrap_content"
+        android:text="Songs"
+        android:id="@+id/btnArtistSongs"
+        android:layout_gravity="right"
+        android:textSize="13dp"
+        android:layout_alignParentTop="true" />
+
+    <ListView
+        android:id="@+id/lstArtistAlbums"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btnArtistSongs">
+    </ListView>
+
+</RelativeLayout>

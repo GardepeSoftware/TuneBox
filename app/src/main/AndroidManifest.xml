@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.mitch.tunebox" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".View.ArtistMenu"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".View.PlayScreen"
+            android:label="@string/app_name">
+            android:parentActivityName="com.example.mitch.musicplayer.MainActivity >
+        </activity>
+
+        <activity android:name=".View.SongMenu"
+            android:label="@string/app_name"></activity>
+
+        <activity android:name=".View.ArtistAlbumsMenu"
+            android:label="@string/app_name"></activity>
+
+        <activity android:name=".View.AlbumsSongsMenu"
+            android:label="@string/app_name"></activity>
+
+        <activity android:name=".View.AlbumMenu"
+            android:label="@string/app_name"></activity>
+
+        <service android:name="com.example.mitch.tunebox.Model.MusicService" />
+    </application>
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
