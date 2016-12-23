@@ -4,35 +4,40 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.hardware.usb.UsbEndpoint;
 import android.os.Bundle;
-import android.text.format.DateUtils;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.mitch.tunebox.Model.ADT.AllMusic;
 import com.example.mitch.tunebox.Model.AlbumArt;
-import com.example.mitch.tunebox.Model.MusicController;
 import com.example.mitch.tunebox.Model.MusicService;
 import com.example.mitch.tunebox.Model.Singleton;
 import com.example.mitch.tunebox.R;
 import com.example.mitch.tunebox.Model.SQLiteHelper;
 import com.example.mitch.tunebox.Model.ADT.SongArray;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Mitch on 9/29/16.
  */
-public class PlayScreen extends Activity implements MediaController.MediaPlayerControl {
+public class PlayScreen extends Activity {
     private SongArray songList;
     private Intent playIntent;
-    private SeekBar seekbar;
-    private ImageView skipNext;
-    private ImageView skipPrev;
-    private ImageView playBtn;
+    private SeekBar mSeekbar;
+    private String seekbarStartPos;
+    private String seekbarEndPos;
+    private TextView startPos;
+    private TextView endPos;
+    private ImageView btnNext;
+    private ImageView btnPrev;
+    private ImageView btnPlay;
     private TextView leftNumbers;
     private TextView rightNumbers;
     private MusicService musicSrv;
@@ -68,8 +73,12 @@ public class PlayScreen extends Activity implements MediaController.MediaPlayerC
         albumName = I.getStringExtra("albumName");
         currSong = I.getStringExtra("currSong");
 
-        //build controller
-        setController();
+        //label texts
+        TextView songLabel = (TextView) findViewById(R.id.songLabel);
+        songLabel.setText(currSong);
+        TextView artistLabel = (TextView) findViewById(R.id.artistLabel);
+        artistLabel.setText(artistName);
+
 
         //album art
         imgView = (ImageView)findViewById(R.id.imgAlbumArt);
@@ -77,27 +86,53 @@ public class PlayScreen extends Activity implements MediaController.MediaPlayerC
         setAlbumArt();
 
         //music controllers
-        seekbar = (SeekBar) findViewById(R.id.seekBar);
-        playBtn = (ImageView) findViewById(R.id.play_pause);
-        skipNext = (ImageView) findViewById(R.id.next);
-        skipPrev = (ImageView) findViewById(R.id.prev);
+        mSeekbar = (SeekBar) findViewById(R.id.seekBar);
+        startPos = (TextView) findViewById(R.id.startText);
+        endPos = (TextView) findViewById(R.id.endText);
+
+        seekbarEndPos = toMinute(musicSrv.getDur());
+        endPos.setText(seekbarEndPos);
+
+        btnPlay = (ImageView) findViewById(R.id.play_pause);
+        btnNext = (ImageView) findViewById(R.id.next);
+        btnPrev = (ImageView) findViewById(R.id.prev);
+
+        setButtons();
 
         //seekbar setup
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                leftNumbers.setText(DateUtils.formatElapsedTime(progress / 1000));
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                stopSeekbarUpdate();
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                getSupportMediaController().getTransportControls().seekTo(seekBar.getProgress());
-                scheduleSeekbarUpdate();
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(musicSrv != null && fromUser){
+                    musicSrv.seek(progress*1000);       //changes place in song
+                }
+                seekbarStartPos = toMinute(progress*1000);
+               startPos.setText(seekbarStartPos);
+
+            }
+        });
+
+        //set up runnable
+        final Handler mHandler = new Handler();
+        PlayScreen.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(musicSrv != null){
+                    mSeekbar.setMax(musicSrv.getDur()/1000);
+                    int mCurrentPosition = musicSrv.getPosn() / 1000;
+                    mSeekbar.setProgress(mCurrentPosition);         //updates seekbar on UI
+                }
+                mHandler.postDelayed(this, 1000);
             }
         });
 
@@ -105,10 +140,13 @@ public class PlayScreen extends Activity implements MediaController.MediaPlayerC
         dbHelper = new SQLiteHelper(this);
     }
 
-    public void setAlbumArt() {
-        AlbumArt albumArt = new AlbumArt(albumID);
 
-        Bitmap art = albumArt.getAlbumArt(this);
+
+
+    public void setAlbumArt() {
+        AlbumArt albumArt = new AlbumArt(this);
+
+        Bitmap art = albumArt.getAlbumArt(albumID);
         if(art != null) {
             imgView.setImageBitmap(art);        //get and set album art if found in music folder
         }
@@ -146,15 +184,10 @@ public class PlayScreen extends Activity implements MediaController.MediaPlayerC
     @Override
     protected void onResume(){
         super.onResume();
-        if(paused){
-            setController();
-            paused = false;
-        }
     }
 
     @Override
     protected void onStop() {
-        controller.hide();
         super.onStop();
     }
 
@@ -163,26 +196,6 @@ public class PlayScreen extends Activity implements MediaController.MediaPlayerC
         stopService(playIntent);
         musicSrv=null;
         super.onDestroy();
-    }
-
-
-    private void setController(){
-        controller = new MusicController(this);           //passes current context to musicController class and returns it
-        //set prev/next buttons with listeners
-        controller.setPrevNextListeners(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playNext();
-            }
-        }, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playPrev();
-            }
-        });
-        controller.setMediaPlayer(this);
-        controller.setAnchorView(findViewById(R.id.play_screen_frame));   //anchors the controller to a view
-        controller.setEnabled(true);                                //sets the enabled state of the view
     }
 
     private void setShuffle(){
@@ -199,7 +212,6 @@ public class PlayScreen extends Activity implements MediaController.MediaPlayerC
     private void playNext(){
         musicSrv.playNext();
         if(playbackPaused){     //if music is paused and user hits next button, next song is played
-            setController();
             playbackPaused = false;
         }
     }
@@ -208,71 +220,48 @@ public class PlayScreen extends Activity implements MediaController.MediaPlayerC
     private void playPrev(){
         musicSrv.playPrev();
         if(playbackPaused){
-            setController();
             playbackPaused = false;
         }
     }
 
-    @Override
-    public void start() {
-        musicSrv.go();
-    }           //etc...
-
-    @Override
-    public void pause() {
-        playbackPaused = true;
-        musicSrv.pausePlayer();
+    private String toMinute(int time){
+        long total = TimeUnit.MILLISECONDS.toSeconds(time);
+        long minutes = TimeUnit.SECONDS.toMinutes(total);
+        long remainSeconds= total - TimeUnit.MINUTES.toSeconds(minutes);
+        String result = String.format("%02d", minutes) + ":"
+                + String.format("%02d", remainSeconds);
+        return result;
     }
 
-    @Override
-    public int getDuration() {
-        if(musicSrv!=null &&  musicBound)
-            return musicSrv.getDur();
-        else return 0;
-    }
+    public void setButtons(){
 
-    @Override
-    public int getCurrentPosition() {
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(musicSrv != null && musicBound){
+                    if (musicSrv.isPng()) {
+                        btnPlay.setImageResource(R.drawable.play_button);
+                        musicSrv.pausePlayer();
+                    } else {
+                        btnPlay.setImageResource(R.drawable.pause_button);
+                        musicSrv.go();
+                    }
+                }
+            }
+        });
 
-        if(musicSrv!=null && musicBound){
-            return musicSrv.getPosn();
-        }
-        else return 0;
-    }
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playNext();
+            }
+        });
 
-    @Override
-    public void seekTo(int pos) {
-        musicSrv.seek(pos);
-    }
-
-    @Override
-    public boolean isPlaying() {
-        if(musicSrv!=null && musicBound){
-            return musicSrv.isPng();
-        }
-        return false;
-    }
-
-    @Override
-    public int getBufferPercentage() {
-        return 0;
-    }
-
-    @Override
-    public boolean canPause() { return true; }
-
-    @Override
-    public boolean canSeekBackward() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekForward() {
-        return true;
-    }
-
-    @Override
-    public int getAudioSessionId() {
-        return 0;
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playPrev();
+            }
+        });
     }
 }

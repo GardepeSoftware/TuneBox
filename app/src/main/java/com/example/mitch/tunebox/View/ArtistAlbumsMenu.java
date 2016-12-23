@@ -2,19 +2,26 @@ package com.example.mitch.tunebox.View;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
+import com.example.mitch.tunebox.Controller.ArtistAlbumsController;
 import com.example.mitch.tunebox.Model.ADT.Album;
 import com.example.mitch.tunebox.Model.ADT.AlbumArray;
-import com.example.mitch.tunebox.Model.ApplicationClass;
+import com.example.mitch.tunebox.Model.ADT.AllMusic;
+import com.example.mitch.tunebox.Model.AlbumArt;
+import com.example.mitch.tunebox.Model.AlbumImageView;
 import com.example.mitch.tunebox.Model.ArtistAlbumsAdapter;
 import com.example.mitch.tunebox.Model.MusicService;
+import com.example.mitch.tunebox.Model.Singleton;
 import com.example.mitch.tunebox.R;
 import com.example.mitch.tunebox.Model.ADT.Song;
 import com.example.mitch.tunebox.Model.ADT.SongArray;
@@ -27,59 +34,33 @@ import java.util.Comparator;
  * Created by Mitch on 9/29/16.
  */
 public class ArtistAlbumsMenu extends Activity {
-    private ArrayList<Album> artistAlbums;
+    private AlbumArray artistAlbums;
     private SongArray albumSongs;
-    private AlbumArray albumList;
     private SongArray songList;
-    private ListView artistAlbumsView;
+    private LinearLayout albumsView;
     public MusicService musicSrv;
     public boolean paused = false;
-    ApplicationClass applicationClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.artist_albums_menu);
 
-        albumList = new AlbumArray();
-        songList = new SongArray();
         artistAlbums = new AlbumArray();
+        songList = new SongArray();
         albumSongs = new SongArray();
 
         Bundle b = getIntent().getExtras();
 
         artistAlbums = b.getParcelable("artistAlbums");
 
-        applicationClass = ((ApplicationClass)getApplicationContext());
-        songList = applicationClass.getSongList();
-        albumList = applicationClass.getAlbumList();
+        //get music
+        ArtistAlbumsController controller = new ArtistAlbumsController();
+        AllMusic allMusic = controller.getMusic();
+        songList = allMusic.getSongList();
+        albumsView = (LinearLayout) findViewById(R.id.albumArtLayout);
 
-        artistAlbumsView = (ListView) findViewById(R.id.lstArtistAlbums);     //links to ListView on xml
-
-        Toast.makeText(this, String.valueOf(artistAlbums.size()), Toast.LENGTH_SHORT).show();
-
-        Collections.sort(artistAlbums, new Comparator<Album>() { //sorts songList
-            @Override
-            public int compare(Album a, Album b) {
-                return a.getAlbum().compareTo(b.getAlbum());
-            }
-        });
-
-        ArtistAlbumsAdapter AlbumAdt = new ArtistAlbumsAdapter(this, artistAlbums);
-        artistAlbumsView.setAdapter(AlbumAdt);                   //maps artistAlbums to ListView
-
-        Button BSong = (Button)findViewById(R.id.btnArtistSongs);
-        final View.OnClickListener OSongs = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent ISong = new Intent(v.getContext(), SongMenu.class);          //launches SongMenu
-                startActivity(ISong);
-            }
-        };
-        BSong.setOnClickListener(OSongs);
-
-
-
+        setAlbumImages();
     }
 
     @Override
@@ -130,8 +111,42 @@ public class ArtistAlbumsMenu extends Activity {
         super.onDestroy();
     }
 
+    public void setAlbumImages(){
+        //get artwork for albums
+        AlbumArt albumArt = new AlbumArt(this);
+        ArrayList<Bitmap> albumImages = albumArt.getArtistAlbums(artistAlbums);
 
-    public void albumPicked(View view) {
+        ArtistAlbumsAdapter a = new ArtistAlbumsAdapter(this);
+        int j = 0;                      //decides which side of the ArtistAlbumsAdapter we're on
+        //create image views
+        for(int i = 0; i < albumImages.size(); i++) {
+            if(j == 0) {
+                a = new ArtistAlbumsAdapter(this);      //left side view
+                a.setBitmap1(albumImages.get(i), i);
+                j = 1;
+
+                if(i == (albumImages.size() -1)){
+                    a.initializeViews(this);            //last image in array
+                    a.setImageViews();
+                    a.setLayoutParams(new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT));
+                    albumsView.addView(a);
+                    j = 1;
+                }
+            } else {
+                a.setBitmap2(albumImages.get(i), i);
+                a.initializeViews(this);            //right side view
+                a.setImageViews();
+                a.setLayoutParams(new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT));
+                albumsView.addView(a);
+                j = 0;
+            }
+        }
+    }
+
+
+    public void artistAlbumPicked(View view) {
         int currView = Integer.parseInt(view.getTag().toString());              // get current album
         String currAlbum = artistAlbums.get(currView).getAlbum().toString();
         albumSongs.clear();
@@ -139,7 +154,7 @@ public class ArtistAlbumsMenu extends Activity {
         for(int i= 0; i < (songList.size()-1); i++){
             if(songList.get(i).album.equals(currAlbum)){                        //get songs from current album;
                 Song s = new Song(songList.get(i).getID(), songList.get(i).getTitle(),
-                        songList.get(i).getArtist(), songList.get(i).getAlbum(), songList.get(i).getArtistID(), songList.get(i).getAlbumID());
+                        songList.get(i).getTrackNo(), songList.get(i).getArtist(), songList.get(i).getAlbum(), songList.get(i).getArtistID(), songList.get(i).getAlbumID());
                 albumSongs.add(s);
 
             }
@@ -150,4 +165,6 @@ public class ArtistAlbumsMenu extends Activity {
         I.putExtras(b);
         startActivity(I);
     }
+
+
 }

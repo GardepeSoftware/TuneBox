@@ -37,6 +37,7 @@ public class AlbumArray extends ArrayList<Album> implements Parcelable {
             Album a = this.get(i);                      //turns Album into a parcel
 
             dest.writeString(a.getAlbum());
+            dest.writeLong(a.getAlbumID());
 
         }
     }
@@ -61,7 +62,7 @@ public class AlbumArray extends ArrayList<Album> implements Parcelable {
 
         for (int i = 0; i < size; i++) {            //gets Album from parcel and turns to string
 
-            Album a = new Album(in.readString());
+            Album a = new Album(in.readString(), in.readLong());
 
             this.add(a);
 

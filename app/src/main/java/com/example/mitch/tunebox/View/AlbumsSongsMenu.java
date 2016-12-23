@@ -12,8 +12,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.mitch.tunebox.Model.AlbumSongsAdapter;
-import com.example.mitch.tunebox.Model.ApplicationClass;
 import com.example.mitch.tunebox.Model.MusicService;
+import com.example.mitch.tunebox.Model.Singleton;
 import com.example.mitch.tunebox.R;
 import com.example.mitch.tunebox.Model.ADT.Song;
 import com.example.mitch.tunebox.Model.ADT.SongArray;
@@ -25,6 +25,7 @@ import java.util.Comparator;
  * Created by Mitch on 9/30/16.
  */
 public class AlbumsSongsMenu extends Activity {
+    private Singleton singleton;
     private SongArray albumSongs;
     private ListView albumSongsView;
     private MusicService musicSrv;
@@ -44,10 +45,10 @@ public class AlbumsSongsMenu extends Activity {
 
         albumSongs = b.getParcelable("albumSongs");                 //gets albumSongs from prev activity
 
-        ApplicationClass applicationClass = ((ApplicationClass) getApplicationContext());   //gets application class instance
-        playIntent = applicationClass.getPlayIntent();
-        musicConn = applicationClass.getMusicConnection();                  //gets MusicSerivce related variables
-        musicSrv = applicationClass.getService();
+        singleton = Singleton.getInstance();
+        playIntent = singleton.getPlayIntent();
+        musicConn = singleton.getMusicConnection();                  //gets MusicSerivce related variables
+        musicSrv = singleton.getService();
 
 
         albumSongsView = (ListView) findViewById(R.id.lstAlbumSongs);     //links to ListView on xml
@@ -56,7 +57,7 @@ public class AlbumsSongsMenu extends Activity {
         Collections.sort(albumSongs, new Comparator<Song>() {
             @Override
             public int compare(Song a, Song b) {
-                return Long.compare(a.getID(), b.getID());
+                return Long.compare(a.getTrackNo(), b.getTrackNo());
             }
         });
 

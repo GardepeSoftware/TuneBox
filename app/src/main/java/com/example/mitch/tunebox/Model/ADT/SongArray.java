@@ -43,6 +43,7 @@ public class SongArray extends ArrayList<Song> implements Parcelable {
 
             dest.writeLong(s.getID());
             dest.writeString(s.getTitle());                 //flattens song to a parcel
+            dest.writeInt(s.getTrackNo());
             dest.writeString(s.getArtist());
             dest.writeString(s.getAlbum());
             dest.writeInt(s.getArtistID());
@@ -70,7 +71,7 @@ public class SongArray extends ArrayList<Song> implements Parcelable {
 
         for (int i = 0; i < size; i++) {                    //turns song from parcel to String(s)
 
-            Song s = new Song(in.readLong(),in.readString(),in.readString(),in.readString(),in.readInt(), in.readLong());
+            Song s = new Song(in.readLong(),in.readString(), in.readInt(), in.readString(),in.readString(),in.readInt(), in.readLong());
 
             this.add(s);
 

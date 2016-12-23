@@ -50,6 +50,8 @@ public class GetMusic {
                     (android.provider.MediaStore.Audio.Media.TITLE);
             int idColumn = musicCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media._ID);
+            int trackNo = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.TRACK);
             int artistColumn = musicCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.ARTIST);
             int albumColumn = musicCursor.getColumnIndex
@@ -61,6 +63,7 @@ public class GetMusic {
                 //add songs to list
             do {
                 long thisId = musicCursor.getLong(idColumn);
+                int trackNumber = musicCursor.getInt(trackNo);
                 long albumID = musicCursor.getLong(albumIDColumn);
                 String thisTitle = musicCursor.getString(titleColumn);          //gets info from each song
                 String thisArtist = musicCursor.getString(artistColumn);
@@ -68,7 +71,7 @@ public class GetMusic {
                 int artistID = musicCursor.getInt(artistColumn);
 
 
-                Song s = new Song(thisId, thisTitle, thisArtist, thisAlbum, artistID, albumID);  //uses info to create an object of type song
+                Song s = new Song(thisId, thisTitle, trackNumber, thisArtist, thisAlbum, artistID, albumID);  //uses info to create an object of type song
                 songList.add(s);                                                        //new song is added to SongArray
 
 
@@ -78,7 +81,7 @@ public class GetMusic {
                 }
 
 
-                Album album = new Album(thisAlbum);        //checks if album is already in array
+                Album album = new Album(thisAlbum, albumID);        //checks if album is already in array
                 if(!albumInArray(albumList, album)) {
                     albumList.add(album);
                 }

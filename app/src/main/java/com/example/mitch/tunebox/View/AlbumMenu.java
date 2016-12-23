@@ -2,6 +2,7 @@ package com.example.mitch.tunebox.View;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +12,8 @@ import android.widget.ListView;
 
 import com.example.mitch.tunebox.Model.ADT.Album;
 import com.example.mitch.tunebox.Model.AlbumAdapter;
+import com.example.mitch.tunebox.Model.AlbumArt;
+import com.example.mitch.tunebox.Model.AlbumImageView;
 import com.example.mitch.tunebox.Model.ADT.AlbumArray;
 import com.example.mitch.tunebox.Model.MusicService;
 import com.example.mitch.tunebox.R;
@@ -72,8 +75,6 @@ public class AlbumMenu extends Activity {
         };
         BSong.setOnClickListener(OSongs);
 
-
-
     }
 
     @Override
@@ -132,7 +133,7 @@ public class AlbumMenu extends Activity {
 
         for(int i= 0; i < (songList.size()-1); i++){
             if(songList.get(i).album.equals(currAlbum)){                    //creates a list of songs for current album
-                Song s = new Song(songList.get(i).getID(), songList.get(i).getTitle(),
+                Song s = new Song(songList.get(i).getID(), songList.get(i).getTitle(), songList.get(i).getTrackNo(),
                         songList.get(i).getArtist(), songList.get(i).getAlbum(), songList.get(i).getArtistID(), songList.get(i).getAlbumID());
                 albumSongs.add(s);
 

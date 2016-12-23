@@ -11,23 +11,27 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.widget.ImageView;
 
+import com.example.mitch.tunebox.Model.ADT.AlbumArray;
+
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 /**
  * Created by Mitch on 12/5/16.
  */
 
 public class AlbumArt {
-    private Long userAlbumID;
+    private Long albumID;
+    private Context context;
 
-    public AlbumArt(Long albumID) {
-       userAlbumID = albumID;
+    public AlbumArt(Context activityContext){
+        context = activityContext;
     }
 
 
-    public Bitmap getAlbumArt(Context context){
+    public Bitmap getAlbumArt(Long userAlbumID){
         Bitmap artwork = null;
 
         Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
@@ -81,5 +85,25 @@ public class AlbumArt {
 
 
        */
+    }
+
+    public ArrayList<Bitmap> getArtistAlbums(AlbumArray albums){
+        ArrayList<Bitmap> albumImages = new ArrayList<Bitmap>();
+
+        for(int i = 0; i < albums.size(); i++) {
+            Long userAlbumID = albums.get(i).getAlbumID();
+            Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+            Uri uri = ContentUris.withAppendedId(sArtworkUri, userAlbumID);
+            ContentResolver res = context.getContentResolver();
+
+            try {
+                InputStream in = res.openInputStream(uri);
+                albumImages.add(BitmapFactory.decodeStream(in));
+            } catch (Exception E) {
+
+            }
+        }
+
+        return albumImages;
     }
 }

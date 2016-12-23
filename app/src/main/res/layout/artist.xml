@@ -9,6 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:id="@+id/txvArtist" />
+        android:textSize="23sp"
+        android:id="@+id/txvArtist"
+        android:typeface="serif"/>
 </LinearLayout>

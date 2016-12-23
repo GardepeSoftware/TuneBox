@@ -223,4 +223,5 @@ public class MusicService extends Service implements
         if(shuffle) shuffle=false;                          //changes shuffle status
         else shuffle=true;
     }
+
 }

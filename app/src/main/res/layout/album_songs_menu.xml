@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="#1A7852"
+    android:background="@color/menuColor"
     tools:context=".View.ArtistAlbumsMenu"
     android:weightSum="1">
 
@@ -15,14 +15,14 @@
         android:id="@+id/btnAlbumSongs"
         android:layout_gravity="right"
         android:textSize="13dp"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/btnArtistArtist" />
+        android:layout_alignParentTop="true" />
 
     <ListView
         android:id="@+id/lstAlbumSongs"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
+        android:background="@color/menuColor"
         android:layout_below="@+id/btnAlbumSongs">
     </ListView>
 

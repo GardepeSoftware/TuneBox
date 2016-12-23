@@ -7,14 +7,19 @@ public class Album {
     //class for creating ArtistArray elements
 
     private String album;
+    private Long albumID;
 
-    public Album(String currAlbum) {
-        if (currAlbum.isEmpty()) {
+    public Album(String userAlbum, Long userAlbumID) {
+        if (userAlbum.isEmpty()) {
             album = "Unknown";
         } else {
-            album = currAlbum;
+            album = userAlbum;
         }
+
+        albumID = userAlbumID;
     }
 
     public String getAlbum(){return album;}
+
+    public Long getAlbumID(){return albumID;}
 }

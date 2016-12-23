@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="#1A7852"
+    android:background="@color/menuColor"
     tools:context=".View.ArtistMenu"
     android:weightSum="1">
 
@@ -21,6 +21,7 @@
         android:id="@+id/lstArtist"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
+        android:background="@color/menuColor"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btnArtistSongs">
     </ListView>

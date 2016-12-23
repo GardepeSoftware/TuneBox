@@ -37,7 +37,6 @@ public class SongMenu extends Activity {
     private AllMusic music;
     private SongArray songList;
     private ListView songView;
-    private Intent playIntent;
     private String shuffleStatus = " false";
     private boolean musicBound = false;
     public MusicService musicSrv;
@@ -51,17 +50,6 @@ public class SongMenu extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.song_menu);
-
-        //checks for permission to access external storage
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL);
-        }
 
         //pull music from memory and fill ListView
         SongsController controller = new SongsController();
@@ -93,11 +81,6 @@ public class SongMenu extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (playIntent == null) {
-            playIntent = new Intent(this, MusicService.class);
-            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);         //binds service to to intent
-            startService(playIntent);
-        }
     }
 
     @Override
@@ -131,7 +114,6 @@ public class SongMenu extends Activity {
         final View.OnClickListener OArtist = new View.OnClickListener() {
             @Override
             public void onClick(View v) {                                     //launches artist menu
-                setSingleton();                                                      //set application class variables
                 Intent IArtist = new Intent(v.getContext(), ArtistMenu.class);
                 startActivity(IArtist);
             }
@@ -143,7 +125,6 @@ public class SongMenu extends Activity {
         final View.OnClickListener OSong = new View.OnClickListener() {
             @Override
             public void onClick(View v) {                                       //set application class variables
-                setSingleton();
                 Intent IAlbum = new Intent(v.getContext(), AlbumMenu.class);
                 startActivity(IAlbum);
             }
@@ -154,7 +135,6 @@ public class SongMenu extends Activity {
         final View.OnClickListener OAlbums = new View.OnClickListener() {                   //onClickEvent for album button
             @Override
             public void onClick(View v) {                                     //set application class variables
-                setSingleton();
                 Intent IAlbum = new Intent(v.getContext(), AlbumMenu.class);
                 startActivity(IAlbum);
             }
@@ -177,34 +157,6 @@ public class SongMenu extends Activity {
     }
 
 
-        //creates new service
-        private ServiceConnection musicConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-                //get service
-                musicSrv = binder.getService();
-                //pass list
-                musicSrv.setList(songList);             //passes song list to MusicService
-                musicBound = true;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                musicBound = false;
-            }
-        };
-
-    //passes variables to application class for use in other classes
-    public void setSingleton(){
-        singleton = Singleton.getInstance();
-        singleton.setService(musicSrv);
-        singleton.setPlayIntent(playIntent);
-        singleton.setMusicConnection(musicConnection);
-        singleton.setShuffleStatus(shuffleStatus);
-
-    }
-
     private void getShuffle(){
 
         Cursor res = dbHelper.getStatus();          //gets cursor from database
@@ -222,12 +174,6 @@ public class SongMenu extends Activity {
 
     //when song is clicked on
     public void songPicked(View view) {
-        if (shuffleStatus.equals(" true")) {
-            musicSrv.setShuffle();                  //sets shuffle to true
-        } if(shuffleStatus.equals(null) || shuffleStatus.equals(" false")){
-            //using this to compensate from broken decryption
-        }
-        setSingleton();                                                     //set application class variables
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));       //sets song is MusicService
         musicSrv.playSong();                                                //plays selected song
         if (playbackPaused) {
