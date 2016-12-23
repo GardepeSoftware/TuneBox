@@ -28,7 +28,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="4">
+            android:layout_weight="5">
 
             <TextView
                 android:id="@+id/startText"
@@ -39,19 +39,6 @@
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:textColor="@android:color/white" />
-
-            <SeekBar
-                android:id="@+id/seekBar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_toStartOf="@+id/endText"
-                android:layout_toEndOf="@+id/startText"
-                android:progressDrawable="@drawable/seekbar_progress"
-                android:thumb="@drawable/seekbar_style" />
 
             <TextView
                 android:id="@+id/endText"
@@ -94,12 +81,26 @@
                 android:layout_below="@+id/songLabel"
                 android:layout_centerHorizontal="true" />
 
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:progressDrawable="@drawable/seekbar_progress"
+                android:thumb="@drawable/seekbar_style"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="19dp" />
+
         </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:weightSum="4">
+            android:weightSum="4"
+            android:layout_weight="2">
 
             <ImageView
                 android:id="@+id/prev"
