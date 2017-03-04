@@ -1,10 +1,7 @@
 package com.example.mitch.tunebox.Model;
 
-import android.app.Application;
 import android.content.Intent;
 import android.content.ServiceConnection;
-
-import com.example.mitch.tunebox.Model.ADT.AllMusic;
 
 /**
  * Created by Mitch on 12/8/16.
@@ -13,8 +10,9 @@ public class Singleton {
     private AllMusic allMusic;
     private MusicService musicSrv;
     private Intent playIntent;
-    public String shuffleStatus;                                //this is an application class used for moving several variables between classes
-    ServiceConnection musicCon;
+    private String shuffleStatus;                                //this is an application class used for moving several variables between classes
+    private ServiceConnection musicCon;
+    private NowPlaying nowPlaying;
 
 
     private static Singleton ourInstance = new Singleton();
@@ -47,6 +45,8 @@ public class Singleton {
             shuffleStatus = shuffle;
         }
 
+    public void setNowPlaying(NowPlaying nowPlayingInfo) {nowPlaying = nowPlayingInfo;}
+
     public AllMusic getAllMusic(){
         return allMusic;
     }
@@ -66,5 +66,7 @@ public class Singleton {
     public String getShuffleStatus(){
             return shuffleStatus;
         }
+
+    public NowPlaying getNowPlaying() {return nowPlaying;}
 
 }

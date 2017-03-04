@@ -6,14 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.example.mitch.tunebox.Model.ADT.Album;
-import com.example.mitch.tunebox.Model.ADT.AlbumArray;
-import com.example.mitch.tunebox.Model.ADT.AllMusic;
-import com.example.mitch.tunebox.Model.ADT.Artist;
-import com.example.mitch.tunebox.Model.ADT.ArtistArray;
-import com.example.mitch.tunebox.Model.ADT.Song;
-import com.example.mitch.tunebox.Model.ADT.SongArray;
-
 import java.util.ArrayList;
 
 /**
@@ -22,25 +14,31 @@ import java.util.ArrayList;
 
 public class GetMusic {
     private Context context;
+    private ContentResolver contentResolver;
 
     public GetMusic(Context c) {
         context = c;
     }
 
+    public GetMusic(Context c, ContentResolver cr) {
+        context = c;                        //constructor for test
+        contentResolver = cr;
+    }
+
 
     public AllMusic pullMusic() {
-
         SongArray songList = new SongArray();
         ArtistArray artistList = new ArtistArray();
         AlbumArray albumList = new AlbumArray();
 
-        ContentResolver musicResolver = context.getContentResolver();       //returns ContentResolver for current app
-        //MediaStore contains all meta data for media stored on internal external devices
-        //we are accessing audio files
+        if(contentResolver == null) {
+            contentResolver = context.getContentResolver();       //if not being tested
+        }
+
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
         //cursors provide read-write access to files in musicUri
-        Cursor musicCursor = musicResolver.query(musicUri, null, selection, null, null);
+        Cursor musicCursor = contentResolver.query(musicUri, null, selection, null, null);
 
 
         //pulls musicCursor columns from first to last
@@ -58,6 +56,9 @@ public class GetMusic {
                     (android.provider.MediaStore.Audio.Media.ALBUM);
             int albumIDColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM_ID);
+            int durationColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.DURATION);
+            int yearColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR);
 
 
                 //add songs to list
@@ -69,9 +70,12 @@ public class GetMusic {
                 String thisArtist = musicCursor.getString(artistColumn);
                 String thisAlbum = musicCursor.getString(albumColumn);
                 int artistID = musicCursor.getInt(artistColumn);
+                long songDuration = musicCursor.getLong(durationColumn);
+                String year = musicCursor.getString(yearColumn);
 
 
-                Song s = new Song(thisId, thisTitle, trackNumber, thisArtist, thisAlbum, artistID, albumID);  //uses info to create an object of type song
+                Song s = new Song(thisId, thisTitle, trackNumber, thisArtist, thisAlbum, artistID,
+                        albumID, songDuration, year);  //uses info to create an object of type song
                 songList.add(s);                                                        //new song is added to SongArray
 
 
@@ -81,7 +85,7 @@ public class GetMusic {
                 }
 
 
-                Album album = new Album(thisAlbum, albumID);        //checks if album is already in array
+                Album album = new Album(thisAlbum, albumID, year);        //checks if album is already in array
                 if(!albumInArray(albumList, album)) {
                     albumList.add(album);
                 }

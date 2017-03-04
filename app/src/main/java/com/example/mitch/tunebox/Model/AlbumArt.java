@@ -3,19 +3,11 @@ package com.example.mitch.tunebox.Model;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.widget.ImageView;
-
-import com.example.mitch.tunebox.Model.ADT.AlbumArray;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 /**
@@ -87,8 +79,7 @@ public class AlbumArt {
        */
     }
 
-    public ArrayList<Bitmap> getArtistAlbums(AlbumArray albums){
-        ArrayList<Bitmap> albumImages = new ArrayList<Bitmap>();
+    public AlbumArray getArtistAlbums(AlbumArray albums){
 
         for(int i = 0; i < albums.size(); i++) {
             Long userAlbumID = albums.get(i).getAlbumID();
@@ -98,12 +89,11 @@ public class AlbumArt {
 
             try {
                 InputStream in = res.openInputStream(uri);
-                albumImages.add(BitmapFactory.decodeStream(in));
+                albums.get(i).setArtwork(BitmapFactory.decodeStream(in));
             } catch (Exception E) {
 
             }
         }
-
-        return albumImages;
+        return albums;
     }
 }

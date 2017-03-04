@@ -1,21 +1,50 @@
-<LinearLayout android:layout_height="match_parent" android:layout_width="match_parent"
-    android:weightSum="2" xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageView
-        android:layout_width="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#000000"
+    android:orientation="horizontal"
+    android:onClick="artistAlbumPicked">
+
+    <RelativeLayout
+        android:id="@+id/llTextOuter"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:scaleType="fitXY"
-        android:adjustViewBounds="true"
-        android:id="@+id/albumImage1"
-        android:onClick="artistAlbumPicked"/>
+        android:orientation="vertical"
+        android:padding="4dp" >
+
+        <TextView
+            android:id="@+id/txtViewAlbum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="20dp"
+            android:singleLine="true"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"
+            android:text="album"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/txtViewYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_below="@id/txtViewAlbum"
+            android:layout_centerInParent="true"
+            android:singleLine="true"
+            android:text="year"
+            android:textColor="#FFFFFF"
+            android:textSize="16dp" />
+    </RelativeLayout>
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:id="@+id/albumImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:scaleType="fitXY"
-        android:adjustViewBounds="true"
-        android:id="@+id/albumImage2"
-        android:onClick="artistAlbumPicked"/>
+        android:layout_gravity="center" />
 
-    </LinearLayout>
+</LinearLayout>

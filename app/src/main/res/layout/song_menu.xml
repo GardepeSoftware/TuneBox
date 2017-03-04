@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="@color/menuColor"
-    tools:context=".View.SongMenu"
+    tools:context=".Activities.SongMenu"
     android:weightSum="1">
 
     <Button
@@ -14,7 +14,7 @@
         android:layout_width="79dp"
         android:layout_height="wrap_content"
         android:text="Artists"
-        android:id="@+id/btnArtist"
+        android:id="@+id/btnSongs_Artists"
         android:textSize="13dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
@@ -24,18 +24,18 @@
         android:layout_width="79dp"
         android:layout_height="wrap_content"
         android:text="Songs"
-        android:id="@+id/btnSongs"
+        android:id="@+id/btnSongs_Songs"
         android:layout_gravity="right"
         android:textSize="13dp"
-        android:layout_above="@+id/song_list"
-        android:layout_toEndOf="@+id/btnAlbums" />
+        android:layout_above="@+id/lstSongs"
+        android:layout_toEndOf="@+id/btnSongs_Albums" />
 
     <ListView
-        android:id="@+id/song_list"
+        android:id="@+id/lstSongs"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/btnArtist">
+        android:layout_below="@+id/btnSongs_Artists">
     </ListView>
 
     <Button
@@ -44,8 +44,8 @@
         android:layout_height="wrap_content"
         android:text="Albums"
         android:textSize="13dp"
-        android:id="@+id/btnAlbums"
-        android:layout_above="@+id/song_list"
-        android:layout_toEndOf="@+id/btnArtist" />
+        android:id="@+id/btnSongs_Albums"
+        android:layout_above="@+id/lstSongs"
+        android:layout_toEndOf="@+id/btnSongs_Artists" />
 
 </RelativeLayout>

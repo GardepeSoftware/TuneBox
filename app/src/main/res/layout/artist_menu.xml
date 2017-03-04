@@ -2,20 +2,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/menuColor"
-    tools:context=".View.ArtistMenu"
+    tools:context=".Activities.ArtistMenu"
     android:weightSum="1">
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="79dp"
-        android:layout_height="wrap_content"
-        android:text="Songs"
-        android:id="@+id/btnArtistSongs"
-        android:layout_gravity="right"
-        android:textSize="13dp"
-        android:layout_alignParentTop="true" />
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <ListView
         android:id="@+id/lstArtist"
@@ -23,7 +22,7 @@
         android:layout_height="match_parent"
         android:background="@color/menuColor"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/btnArtistSongs">
+        android:fastScrollEnabled="true"
+        android:layout_below="@+id/my_toolbar">
     </ListView>
-
 </RelativeLayout>

@@ -12,14 +12,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.widget.TextView;
 
-import com.example.mitch.tunebox.Model.ADT.Song;
-import com.example.mitch.tunebox.Model.ADT.SongArray;
 import com.example.mitch.tunebox.R;
-import com.example.mitch.tunebox.View.PlayScreen;
+import com.example.mitch.tunebox.Activities.PlayScreen;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Mitch on 9/29/16.
@@ -38,6 +38,10 @@ public class MusicService extends Service implements
     private static final int NOTIFY_ID=1;
     private boolean shuffle=false;
     private Random rand;
+    private TextView txtViewDuration;
+    private TextView txtViewCurrentPosition;
+    private TextView txtViewSongName;
+    private TextView txtViewArtistName;
 
     @Override
     public void onCreate(){
@@ -96,6 +100,7 @@ public class MusicService extends Service implements
         return false;
     }
 
+    //TODO need to fix the notification
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
@@ -184,6 +189,7 @@ public class MusicService extends Service implements
         }
         songPosn++;                     //song index increments
         if(songPosn>=songs.size()) songPosn=0;
+        updateTrackInfo();
         playSong();
     }
 
@@ -192,6 +198,7 @@ public class MusicService extends Service implements
         songPosn--;                     //song index decrements
         if(songPosn<0) songPosn=songs.size()-1;
         playSong();
+        updateTrackInfo();
     }
 
     //current song position
@@ -224,4 +231,41 @@ public class MusicService extends Service implements
         else shuffle=true;
     }
 
+    //connect this class to playscreen song duration
+    public void passDurationTextView(TextView tv) {
+        txtViewDuration = tv;
+    }
+
+    public void passSongNameTextView(TextView tv) {
+        txtViewSongName = tv;
+    }
+
+    public void passArtistAlbumTextView(TextView tv) {
+        txtViewArtistName = tv;
+    }
+
+    private void updateTrackInfo() {
+        Song song = songs.get(songPosn);
+        txtViewDuration.setText(toMinute(song.duration));
+        txtViewSongName.setText(song.title);
+        txtViewArtistName.setText(song.artist + " - " + song.album);
+    }
+
+    private String toMinute(int time){
+        long total = TimeUnit.MILLISECONDS.toSeconds(time);
+        long minutes = TimeUnit.SECONDS.toMinutes(total);
+        long remainSeconds= total - TimeUnit.MINUTES.toSeconds(minutes);
+        String result = String.format("%02d", minutes) + ":"
+                + String.format("%02d", remainSeconds);
+        return result;
+    }
+
+    private String toMinute(long time){
+        long total = TimeUnit.MILLISECONDS.toSeconds(time);
+        long minutes = TimeUnit.SECONDS.toMinutes(total);
+        long remainSeconds= total - TimeUnit.MINUTES.toSeconds(minutes);
+        String result = String.format("%02d", minutes) + ":"
+                + String.format("%02d", remainSeconds);
+        return result;
+    }
 }

@@ -5,15 +5,10 @@ import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.mitch.tunebox.Model.ADT.Album;
 import com.example.mitch.tunebox.R;
-
-import java.util.ArrayList;
 
 /**
  * Created by Mitch on 9/19/16.
@@ -36,7 +31,7 @@ public class AlbumImageView extends View {
     public View createView(int position, View convertView, ViewGroup parent) {
         //map to song layout
         LinearLayout AlbumLay = (LinearLayout)albumInf.inflate
-                (R.layout.album_image_view, parent, false);
+                (R.layout.album_image_vieww, parent, false);
 
         if(album1 != null) {
             ImageView image1 = (ImageView) AlbumLay.findViewById(R.id.albumImage1);

@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="@color/menuColor"
-    tools:context=".View.AlbumMenu"
+    tools:context=".Activities.AlbumMenu"
     android:weightSum="1">
 
     <Button
